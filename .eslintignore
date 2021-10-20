@@ -1,0 +1,15 @@
+packages/admin/build
+packages/admin/config
+packages/admin/coverage
+packages/admin/node_modules
+packages/admin/public
+packages/admin/scripts
+
+packages/frontend/build
+packages/frontend/config
+packages/frontend/coverage
+packages/frontend/node_modules
+packages/frontend/public
+packages/frontend/scripts
+
+node_modules

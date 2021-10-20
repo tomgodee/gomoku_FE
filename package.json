@@ -1,0 +1,50 @@
+{
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true,
+  "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.58",
+    "@reduxjs/toolkit": "1.5.1",
+    "@types/lodash": "^4.14.170",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/styled-components": "^5.1.9",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "add": "^2.0.6",
+    "axios": "^0.21.1",
+    "eslint": "^7.25.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^6.0.0",
+    "moment": "^2.29.1",
+    "react-hook-form": "^7.6.2",
+    "react-redux": "7.2.3",
+    "react-router-dom": "^5.2.0",
+    "redux-devtools": "3.7.0",
+    "socket.io-client": "^4.1.2",
+    "styled-components": "^5.3.0",
+    "yarn": "^1.22.10"
+  },
+  "scripts": {
+    "start:admin": "yarn install && cd packages/admin && node scripts/start.js",
+    "build:admin": "cd packages/admin && node scripts/build.js",
+    "lint:admin": "eslint 'packages/admin/src/{store,components,pages,reducers,values,utils}/**/*.{tsx,ts}'",
+    "start:frontend": "yarn install && cd packages/frontend && node scripts/start.js",
+    "build:frontend": "cd packages/frontend && node scripts/build.js",
+    "lint:frontend": "eslint 'packages/frontend/src/{store,components,pages,reducers,values,utils}/**/*.{tsx,ts}'",
+    "test": "cd packages/frontend && node scripts/test.js --testRunner=/home/tom/Workspace/gomoku_FE/node_modules/jest-circus/runner.js",
+    "test:ci": "cd packages/frontend && CI=true node scripts/test.js --testRunner=/home/circleci/repo/node_modules/jest-circus/runner.js",
+    "test:coverage": "npm test -- --coverage",
+    "env-info": "eslint --env-info",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "react-dev-utils": "^11.0.4"
+  }
+}
