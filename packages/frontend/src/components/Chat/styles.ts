@@ -12,8 +12,7 @@ export const ChatContainer = styled.div`
   width: 360px;
   border-radius: 20px;
   height: 500px;
-  over-flow: hidden;
-  margin-right:20px;
+  margin-left: 48px;
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 2px 10px 40px rgb(22 20 19 / 40%);
   border: 10px solid ${borderChatContainer};

@@ -17,7 +17,7 @@ import {
 } from '../../types/room';
 import { selectUserState } from '../../reducers/user';
 // import { selectRoom } from '../../reducers/room';
-import { MESSAGE_SENT } from '../../config/socketio';
+import { MESSAGE_SENT } from '../../config/socketActions';
 
 interface ChatProps {
   socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -38,6 +38,7 @@ const Chat = (props: ChatProps) => {
 
   useEffect(() => {
     props.socket?.on(MESSAGE_SENT, (message: MessageInterface) => {
+      console.log('message', message);
       setChatMessages((prevChatMessages) => {
         return [...prevChatMessages, message];
       });

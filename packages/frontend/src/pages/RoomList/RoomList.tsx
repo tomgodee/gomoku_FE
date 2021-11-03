@@ -18,16 +18,17 @@ import { ROOM_PATH } from '../../config/paths';
 const RoomList = () => {
   const history = useHistory();
   const [rooms] = useState<number[]>([1]);
-  const [roomID, setRoomID] = useState<number>(0);
+  const [roomID, setRoomID] = useState<number>(1);
 
   const user = useAppSelector(selectUserState);
 
-  const joinRoom = (data: any) => {
-    history.push(`${ROOM_PATH}/${roomID}`, data);
+  const joinRoom = () => {
+    history.push(`${ROOM_PATH}/${roomID}`);
   };
 
   const clickRoom = (id: number) => {
     setRoomID(id);
+    joinRoom();
   };
 
   return (
