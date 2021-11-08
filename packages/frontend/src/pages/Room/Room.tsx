@@ -4,7 +4,9 @@ import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
 import { useBeforeunload } from 'react-beforeunload';
 import {
+  Button,
   Grid,
+  Box,
 } from '@material-ui/core';
 import {
   RoomContainer,
@@ -13,12 +15,13 @@ import {
 } from './styles';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
-import { ASSIGN_MARK } from '../../config/socketActions';
+import { ASSIGN_MARK, CLIENT_GAME_START, SERVER_GAME_START, GAME_OVER } from '../../config/socketActions';
 import { LOADING } from '../../config/status';
 import { ROOMLIST_PATH } from '../../config/paths';
 import { BuyIn as BuyInInterface } from '../../types/room';
 import Chat from '../../components/Chat';
 import Board from '../../components/Board';
+import PlayerCard from '../../components/PlayerCard';
 
 const Room = () => {
   const history = useHistory();
@@ -48,16 +51,31 @@ const Room = () => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   console.log('socket', socket.current);
+  //   // socket.current!.emit(SERVER_GAME_START);
+  // }, [socket]);
+
+  // const startGame = () => {
+  //   socket.current!.emit(CLIENT_GAME_START);
+  // };
+  // console.log('socket', socket);
+
   return (
     <RoomContainer>
       {/* <LoadingOverlay open={user.status === LOADING || room.status === LOADING}>
         <LoadingIcon />
       </LoadingOverlay> */}
       <Grid container>
-        <Grid item xs={3} />
+        <Grid item xs={3}>
+          <Box display="flex" flexDirection="column" justifyContent="space-evenly" alignItems="center" height="100%">
+            <PlayerCard />
+            <PlayerCard />
+          </Box>
+        </Grid>
         <Grid item xs={6}>
           <Board
-            socket={socket.current!}
+            socket={socket.current}
             mark={mark}
           />
         </Grid>
@@ -67,6 +85,9 @@ const Room = () => {
           />
         </Grid>
       </Grid>
+      <Box display="flex" justifyContent="center" css={{ width: '100%' }} mt={2}>
+        {/* <Button type="button" variant="contained" color="primary" onClick={() => startGame()}>GAME START</Button> */}
+      </Box>
     </RoomContainer>
   );
 };

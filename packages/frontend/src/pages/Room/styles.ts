@@ -11,6 +11,7 @@ export const RoomContainer = styled.div`
   width: 100%;
   height: 100%;
   flex-wrap: wrap;
+  margin-top: 24px;
 `;
 
 export const LoadingOverlay = styled(Backdrop)`
