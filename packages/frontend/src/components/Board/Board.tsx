@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/no-unused-prop-types */
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
@@ -13,8 +13,8 @@ import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
 import { LOADING } from '../../config/status';
 import {
-  CLIENT_CHECK, SERVER_CHECK, CLIENT_GAME_START, SERVER_GAME_START,
-  GAME_OVER, JOIN_ROOM,
+  CLIENT_CHECK, SERVER_CHECK, SERVER_GAME_START,
+  GAME_OVER,
 } from '../../config/socketActions';
 import { rose, arapawa } from '../../themes/colors';
 
@@ -24,6 +24,7 @@ interface BoardProps {
     circle: boolean;
     ex: boolean;
   };
+  player: any;
 }
 
 interface Square {
@@ -33,12 +34,7 @@ interface Square {
 }
 
 const Board = (props: BoardProps) => {
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const params = useParams() as any;
-  const user = useAppSelector(selectUserState);
-
-  const [board, setBoard] = useState<Square[]>(() => {
+  const createBoard = useCallback(() => {
     const initialState = [];
     for (let i = 0; i < 10; i += 1) {
       for (let j = 0; j < 10; j += 1) {
@@ -50,20 +46,29 @@ const Board = (props: BoardProps) => {
       }
     }
     return initialState;
-  });
+  }, []);
+
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const params = useParams() as any;
+  const user = useAppSelector(selectUserState);
+  const [myTurn, setMyTurn] = useState(false);
+  const [board, setBoard] = useState<Square[]>(createBoard());
 
   const [playable, setPlayable] = useState(false);
 
   useEffect(() => {
-    console.log('props.socket', props.socket);
     props.socket?.on(SERVER_GAME_START, (boardGame: Square[]) => {
-      console.log('boardGame', boardGame);
       setBoard(boardGame);
       setPlayable(true);
     });
 
-    props.socket?.on(GAME_OVER, () => {
+    props.socket?.on(GAME_OVER, (winningCondition: any) => {
+      if (!winningCondition) {
+        setBoard(createBoard());
+      }
       setPlayable(false);
+      setMyTurn(false);
     });
 
     props.socket?.on(SERVER_CHECK, (square: Square) => {
@@ -73,13 +78,26 @@ const Board = (props: BoardProps) => {
           return boardSquare;
         });
       });
+      setMyTurn((prevState: boolean) => !prevState);
     });
   }, [props.socket]);
 
+  useEffect(() => {
+    console.log('aa');
+    if (props.mark.ex) setMyTurn(true);
+  }, [props.mark]);
+
   const handleClickSquare = (square: Square) => {
     const index = Number(square.id.split('-').join(''));
-    if (playable && !board[index].circle && !board[index].ex) {
-      props.socket?.emit(CLIENT_CHECK, Object.assign(square, props.mark));
+    console.log(props.player);
+    if (playable && myTurn && !board[index].circle && !board[index].ex) {
+      props.socket?.emit(CLIENT_CHECK, {
+        square: Object.assign(square, props.mark),
+        board,
+        room: {
+          id: params.id,
+        },
+      });
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
@@ -15,21 +15,21 @@ import {
 } from './styles';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
-import { ASSIGN_MARK, CLIENT_GAME_START, SERVER_GAME_START, GAME_OVER } from '../../config/socketActions';
+import { ASSIGN_MARK, CLIENT_GAME_START, JOIN_ROOM, UPDATE_PLAYERS } from '../../config/socketActions';
 import { LOADING } from '../../config/status';
 import { ROOMLIST_PATH } from '../../config/paths';
-import { BuyIn as BuyInInterface } from '../../types/room';
+import type { Player, Profile } from '../../types/user';
 import Chat from '../../components/Chat';
 import Board from '../../components/Board';
 import PlayerCard from '../../components/PlayerCard';
 
 const Room = () => {
   const history = useHistory();
-  const location = useLocation<BuyInInterface>();
   const dispatch = useAppDispatch();
   const params = useParams() as any;
   const user = useAppSelector(selectUserState);
-  const socket = useRef<Socket<DefaultEventsMap, DefaultEventsMap>>();
+  const [players, setPlayers] = useState<any>([null, null]);
+  const [socket, setSocket] = useState<Socket<DefaultEventsMap, DefaultEventsMap>>();
   const [mark, setMark] = useState({
     circle: false,
     ex: false,
@@ -41,25 +41,47 @@ const Room = () => {
   });
 
   useEffect(() => {
-    socket.current = io(process.env.REACT_APP_WS_BASE_URL!);
-    socket.current.on(ASSIGN_MARK, (assignedMark: any) => {
-      setMark(assignedMark);
-    });
-
+    setSocket(io(process.env.REACT_APP_WS_BASE_URL!));
     return () => {
-      socket.current?.disconnect();
+      socket?.disconnect();
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log('socket', socket.current);
-  //   // socket.current!.emit(SERVER_GAME_START);
-  // }, [socket]);
+  useEffect(() => {
+    if (user.id && socket) {
+      console.log('user', user.id, socket);
+      socket.emit(JOIN_ROOM, {
+        user,
+        room: {
+          id: params.id,
+        },
+      });
+    }
+  }, [socket, user]);
 
-  // const startGame = () => {
-  //   socket.current!.emit(CLIENT_GAME_START);
-  // };
-  // console.log('socket', socket);
+  useEffect(() => {
+    socket?.on(UPDATE_PLAYERS, (updatedPlayers: Profile[]) => {
+      console.log('updatedPlayers', updatedPlayers);
+      setPlayers(updatedPlayers);
+    });
+
+    socket?.on(ASSIGN_MARK, (assignedMark: any) => {
+      setMark(assignedMark);
+    });
+  }, [socket]);
+
+  // TODO: useCallback can be applied here
+  const startGame = () => {
+    socket?.emit(CLIENT_GAME_START, {
+      room: {
+        id: params.id,
+      },
+    });
+  };
+
+  const currentPlayerIndex = useMemo(() => {
+    return players.findIndex((player: any) => player?.id === user.id);
+  }, [players, user]);
 
   return (
     <RoomContainer>
@@ -69,24 +91,25 @@ const Room = () => {
       <Grid container>
         <Grid item xs={3}>
           <Box display="flex" flexDirection="column" justifyContent="space-evenly" alignItems="center" height="100%">
-            <PlayerCard />
-            <PlayerCard />
+            <PlayerCard player={players[0]} currentPlayer={currentPlayerIndex === 0 ? players[0] : null} />
+            <PlayerCard player={players[1]} currentPlayer={currentPlayerIndex === 1 ? players[1] : null} />
           </Box>
         </Grid>
         <Grid item xs={6}>
           <Board
-            socket={socket.current}
+            socket={socket}
             mark={mark}
+            player={players.filter((p: any) => p?.id === user.id)}
           />
         </Grid>
         <Grid item xs={3}>
           <Chat
-            socket={socket.current!}
+            socket={socket!}
           />
         </Grid>
       </Grid>
       <Box display="flex" justifyContent="center" css={{ width: '100%' }} mt={2}>
-        {/* <Button type="button" variant="contained" color="primary" onClick={() => startGame()}>GAME START</Button> */}
+        <Button type="button" variant="contained" color="primary" onClick={() => startGame()}>GAME START</Button>
       </Box>
     </RoomContainer>
   );

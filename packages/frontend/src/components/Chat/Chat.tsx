@@ -37,9 +37,7 @@ const Chat = (props: ChatProps) => {
   const chatContainerRef = useRef<null | HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log('props.socket', props.socket);
     props.socket?.on(MESSAGE_SENT, (message: MessageInterface) => {
-      console.log('message', message);
       setChatMessages((prevChatMessages) => {
         return [...prevChatMessages, message];
       });

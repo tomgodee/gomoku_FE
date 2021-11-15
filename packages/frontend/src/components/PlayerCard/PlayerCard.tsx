@@ -1,4 +1,6 @@
-import React from 'react';
+/* eslint-disable no-return-assign */
+/* eslint-disable no-param-reassign */
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -16,10 +18,47 @@ import { borderChatContainer } from '../../themes/colors';
 
 type PlayerCardProps = {
   player?: Player;
+  currentPlayer: any;
 }
 
 const PlayerCard = (props: PlayerCardProps) => {
-  const { player } = props;
+  const { player, currentPlayer } = props;
+  const [timer, setTimer] = useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer((prevState) => prevState += 1);
+    }, 1000);
+
+    if (!currentPlayer?.myTurn) {
+      clearInterval(intervalId);
+      setTimer(0);
+    }
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [currentPlayer?.myTurn]);
+
+  const showClock = useCallback((time: number): string => {
+    let minute = '';
+    let second = '';
+    if (time < 60) {
+      minute = '00';
+    } else if (time < 600) {
+      minute = `0${Math.floor(time / 60)}`;
+    } else {
+      minute = `${Math.floor(time / 60)}`;
+    }
+
+    if (Math.floor(time % 60) < 10) {
+      second = `0${Math.floor(time % 60)}`;
+    } else {
+      second = `${Math.floor(time % 60)}`;
+    }
+
+    return `${minute}:${second}`;
+  }, []);
 
   return (
     <PlayerCardContainer>
@@ -28,15 +67,21 @@ const PlayerCard = (props: PlayerCardProps) => {
           <Box display="flex" flexDirection="column" justifyContent="space-evenly" alignItems="center" height="100%">
             <Avatar src={goStone} alt="Avatar" />
             <NameTag>
-              Tom
+              {player?.name}
             </NameTag>
+            {currentPlayer?.myTurn
+              && (
+              <Text>
+                {showClock(timer)}
+              </Text>
+              )}
           </Box>
         </Grid>
 
         <Grid item xs={4}>
           <Box display="flex" justifyContent="center" alignItems="center" height="100%">
             <Score>
-              0
+              {player?.score}
             </Score>
           </Box>
         </Grid>
@@ -48,11 +93,9 @@ const PlayerCard = (props: PlayerCardProps) => {
 PlayerCard.defaultProps = {
   player: {
     socketId: '',
-    user: {
-      seat: 0,
-      name: '',
-      money: 0,
-    },
+    name: '',
+    id: 0,
+    score: 0,
   },
 };
 

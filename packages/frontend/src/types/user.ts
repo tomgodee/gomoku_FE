@@ -1,18 +1,8 @@
 interface Player {
   socketId: string;
-  user: {
-    seat: number;
-    name: string;
-    currentMoney: number;
-    totalMoney: number;
-    bet: number;
-    hasActioned: boolean;
-    actions: string[],
-    isActing: boolean;
-    cards: any[];
-    role: string | string[];
-    status: string;
-  }
+  id: number;
+  name: string;
+  score: number;
 }
 
 interface LoginForm {
