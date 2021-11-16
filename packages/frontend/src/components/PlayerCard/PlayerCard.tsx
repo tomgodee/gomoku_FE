@@ -19,26 +19,23 @@ import { borderChatContainer } from '../../themes/colors';
 type PlayerCardProps = {
   player?: Player;
   currentPlayer: any;
+  opponent: any;
 }
 
 const PlayerCard = (props: PlayerCardProps) => {
-  const { player, currentPlayer } = props;
+  const { player, currentPlayer, opponent } = props;
   const [timer, setTimer] = useState(0);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTimer((prevState) => prevState += 1);
     }, 1000);
-
-    if (!currentPlayer?.myTurn) {
-      clearInterval(intervalId);
-      setTimer(0);
-    }
+    setTimer(0);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [currentPlayer?.myTurn]);
+  }, [currentPlayer?.myTurn, opponent?.myTurn]);
 
   const showClock = useCallback((time: number): string => {
     let minute = '';
@@ -70,6 +67,12 @@ const PlayerCard = (props: PlayerCardProps) => {
               {player?.name}
             </NameTag>
             {currentPlayer?.myTurn
+              && (
+              <Text>
+                {showClock(timer)}
+              </Text>
+              )}
+            {opponent?.myTurn
               && (
               <Text>
                 {showClock(timer)}

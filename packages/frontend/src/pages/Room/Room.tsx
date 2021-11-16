@@ -91,8 +91,16 @@ const Room = () => {
       <Grid container>
         <Grid item xs={3}>
           <Box display="flex" flexDirection="column" justifyContent="space-evenly" alignItems="center" height="100%">
-            <PlayerCard player={players[0]} currentPlayer={currentPlayerIndex === 0 ? players[0] : null} />
-            <PlayerCard player={players[1]} currentPlayer={currentPlayerIndex === 1 ? players[1] : null} />
+            <PlayerCard
+              player={players[0]}
+              currentPlayer={currentPlayerIndex === 0 ? players[0] : null}
+              opponent={currentPlayerIndex === 0 ? null : players[0]}
+            />
+            <PlayerCard
+              player={players[1]}
+              currentPlayer={currentPlayerIndex === 1 ? players[1] : null}
+              opponent={currentPlayerIndex === 1 ? null : players[1]}
+            />
           </Box>
         </Grid>
         <Grid item xs={6}>
