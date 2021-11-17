@@ -49,7 +49,6 @@ const Room = () => {
 
   useEffect(() => {
     if (user.id && socket) {
-      console.log('user', user.id, socket);
       socket.emit(JOIN_ROOM, {
         user,
         room: {
@@ -61,7 +60,6 @@ const Room = () => {
 
   useEffect(() => {
     socket?.on(UPDATE_PLAYERS, (updatedPlayers: Profile[]) => {
-      console.log('updatedPlayers', updatedPlayers);
       setPlayers(updatedPlayers);
     });
 

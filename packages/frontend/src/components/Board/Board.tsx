@@ -1,6 +1,7 @@
+/* eslint-disable no-mixed-operators */
 /* eslint-disable no-param-reassign */
 /* eslint-disable react/no-unused-prop-types */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Socket } from 'socket.io-client';
 import { DefaultEventsMap } from 'socket.io-client/build/typed-events';
@@ -8,6 +9,7 @@ import { Typography } from '@material-ui/core';
 import {
   BoardContainer,
   BoardSquare,
+  Line,
 } from './styles';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
@@ -31,6 +33,7 @@ interface Square {
   id: string;
   circle: boolean;
   ex: boolean;
+  drawing?: boolean;
 }
 
 const Board = (props: BoardProps) => {
@@ -42,6 +45,7 @@ const Board = (props: BoardProps) => {
           id: `${i}-${j}`,
           circle: false,
           ex: false,
+          drawing: true,
         });
       }
     }
@@ -54,6 +58,7 @@ const Board = (props: BoardProps) => {
   const user = useAppSelector(selectUserState);
   const [myTurn, setMyTurn] = useState(false);
   const [board, setBoard] = useState<Square[]>(createBoard());
+  const squareRef = useRef<any>();
 
   const [playable, setPlayable] = useState(false);
 
@@ -63,9 +68,18 @@ const Board = (props: BoardProps) => {
       setPlayable(true);
     });
 
-    props.socket?.on(GAME_OVER, (winningCondition: any) => {
+    props.socket?.on(GAME_OVER, (winningCondition: {circle: boolean; ex: boolean; drawingLine: string[]}) => {
       if (!winningCondition) {
         setBoard(createBoard());
+      } else {
+        setBoard((prevState) => {
+          for (let i = 0; i < winningCondition.drawingLine.length; i += 1) {
+            const [y, x] = winningCondition.drawingLine[i].split('-');
+            const index = Number(`${x}${y}`);
+            prevState[index].drawing = true;
+          }
+          return prevState;
+        });
       }
       setPlayable(false);
       setMyTurn(false);
@@ -83,13 +97,11 @@ const Board = (props: BoardProps) => {
   }, [props.socket]);
 
   useEffect(() => {
-    console.log('aa');
     if (props.mark.ex) setMyTurn(true);
   }, [props.mark]);
 
   const handleClickSquare = (square: Square) => {
     const index = Number(square.id.split('-').join(''));
-    console.log(props.player);
     if (playable && myTurn && !board[index].circle && !board[index].ex) {
       props.socket?.emit(CLIENT_CHECK, {
         square: Object.assign(square, props.mark),
@@ -101,18 +113,28 @@ const Board = (props: BoardProps) => {
     }
   };
 
+  const lineWidth = useMemo(() => {
+    return Math.sqrt((squareRef.current?.clientWidth + 2) ** 2 + (squareRef.current?.clientHeight + 2) ** 2);
+  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight]);
+
+  const rotate = useMemo(() => {
+    return Math.atan((squareRef.current?.clientWidth + 2) / (squareRef.current?.clientHeight + 2)) * 180 / Math.PI;
+  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight]);
+
   return (
     <BoardContainer>
-      {board.map((square) => {
+      {board.map((square, index) => {
         return (
           <BoardSquare
             key={square.id}
             onClick={() => handleClickSquare(square)}
+            ref={index === 0 ? squareRef : null}
           >
             <Typography style={{ fontSize: 24, color: square.circle ? rose : arapawa }}>
               {square.circle && 'O'}
               {square.ex && 'X'}
             </Typography>
+            {square.drawing && <Line $width={lineWidth} $rotate={rotate} />}
           </BoardSquare>
         );
       })}

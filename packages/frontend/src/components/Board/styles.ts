@@ -4,7 +4,7 @@ import {
   Input,
   Typography,
 } from '@material-ui/core';
-import { gray, salmon, borderChatContainer } from '../../themes/colors';
+import { green, salmon, borderChatContainer } from '../../themes/colors';
 
 export const BoardContainer = styled.div`
   display: grid;
@@ -17,4 +17,20 @@ export const BoardSquare = styled.div`
   align-items: center;
   justify-content: center;
   border: 1px solid black;
+  position: relative;
+`;
+
+interface LineProps {
+  $width: number;
+  $rotate: number;
+}
+
+export const Line = styled.div<LineProps>`
+  position: absolute;
+  top: 31%;
+  left: 25%;
+  width: ${(props) => (`${props.$width}px`)};
+  height: ${(props) => (`${props.$width}px`)};
+  border-left: 3px solid ${salmon};
+  transform: ${(props) => (`rotate(${props.$rotate}deg)`)};
 `;
