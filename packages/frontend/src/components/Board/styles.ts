@@ -1,5 +1,5 @@
 /* eslint-disable import/prefer-default-export */
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import {
   Input,
   Typography,
@@ -25,6 +25,16 @@ interface LineProps {
   $rotate: number;
 }
 
+const Fadein = keyframes`
+  from {
+    opacity: 0.2;
+  }
+
+  to {
+    opacity: 1;
+  }
+`;
+
 export const Line = styled.div<LineProps>`
   position: absolute;
   top: 31%;
@@ -33,4 +43,5 @@ export const Line = styled.div<LineProps>`
   height: ${(props) => (`${props.$width}px`)};
   border-left: 3px solid ${salmon};
   transform: ${(props) => (`rotate(${props.$rotate}deg)`)};
+  animation: ${Fadein} 1.5s linear;
 `;

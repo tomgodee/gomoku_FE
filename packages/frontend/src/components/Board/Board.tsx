@@ -45,7 +45,7 @@ const Board = (props: BoardProps) => {
           id: `${i}-${j}`,
           circle: false,
           ex: false,
-          drawing: true,
+          drawing: false,
         });
       }
     }
@@ -58,6 +58,7 @@ const Board = (props: BoardProps) => {
   const user = useAppSelector(selectUserState);
   const [myTurn, setMyTurn] = useState(false);
   const [board, setBoard] = useState<Square[]>(createBoard());
+  const [direction, setDirection] = useState('');
   const squareRef = useRef<any>();
 
   const [playable, setPlayable] = useState(false);
@@ -68,10 +69,11 @@ const Board = (props: BoardProps) => {
       setPlayable(true);
     });
 
-    props.socket?.on(GAME_OVER, (winningCondition: {circle: boolean; ex: boolean; drawingLine: string[]}) => {
+    props.socket?.on(GAME_OVER, (winningCondition: {circle: boolean; ex: boolean; drawingLine: string[], direction: string}) => {
       if (!winningCondition) {
         setBoard(createBoard());
       } else {
+        setDirection(winningCondition.direction);
         setBoard((prevState) => {
           for (let i = 0; i < winningCondition.drawingLine.length; i += 1) {
             const [y, x] = winningCondition.drawingLine[i].split('-');
