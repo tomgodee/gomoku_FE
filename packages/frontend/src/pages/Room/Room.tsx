@@ -43,11 +43,13 @@ const Room = () => {
   });
 
   useEffect(() => {
-    setSocket(io(process.env.REACT_APP_WS_BASE_URL!));
+    if (!socket) {
+      setSocket(io(process.env.REACT_APP_WS_BASE_URL!));
+    }
     return () => {
       socket?.disconnect();
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (user.id && socket) {

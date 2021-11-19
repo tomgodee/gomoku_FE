@@ -18,10 +18,13 @@ const Profile = () => {
 
   return (
     <ProfileContainer>
-      <Grid xs={12}>
-        <Typography component="h3">
-          Name: {profile?.name}
-        </Typography>
+      <Grid container>
+        <Grid item xs={12}>
+          <Typography component="h3">
+            Name: {profile?.name}
+            WIP
+          </Typography>
+        </Grid>
       </Grid>
     </ProfileContainer>
   );
