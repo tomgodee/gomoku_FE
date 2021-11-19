@@ -1,7 +1,8 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import {
   Backdrop,
   CircularProgress,
+  Button,
 } from '@material-ui/core';
 import { rose } from '../../themes/colors';
 
@@ -21,3 +22,17 @@ export const LoadingOverlay = styled(Backdrop)`
 export const LoadingIcon = styled(CircularProgress)`
   color: ${rose};
 ` as typeof CircularProgress;
+
+const Fadein = keyframes`
+  from {
+    opacity: 0.2;
+  }
+
+  to {
+    opacity: 1;
+  }
+`;
+
+export const StartButton = styled(Button)`
+  animation: ${Fadein} 1.5s linear;
+`;

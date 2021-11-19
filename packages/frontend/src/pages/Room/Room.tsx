@@ -12,6 +12,7 @@ import {
   RoomContainer,
   LoadingOverlay,
   LoadingIcon,
+  StartButton,
 } from './styles';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
@@ -34,6 +35,7 @@ const Room = () => {
     circle: false,
     ex: false,
   });
+  const [startable, setStartable] = useState(true);
 
   // Stop user from reloading/ close then open the page again
   useBeforeunload(() => {
@@ -106,6 +108,7 @@ const Room = () => {
             socket={socket}
             mark={mark}
             player={players.filter((p: any) => p?.id === user.id)}
+            setStartable={setStartable}
           />
         </Grid>
         <Grid item xs={3}>
@@ -115,7 +118,10 @@ const Room = () => {
         </Grid>
       </Grid>
       <Box display="flex" justifyContent="center" css={{ width: '100%' }} mt={2}>
-        <Button type="button" variant="contained" color="primary" onClick={() => startGame()}>GAME START</Button>
+        {
+          players.length === 2 && startable
+          && <StartButton type="button" variant="contained" color="primary" onClick={() => startGame()}>GAME START</StartButton>
+        }
       </Box>
     </RoomContainer>
   );

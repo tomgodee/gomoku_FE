@@ -27,6 +27,7 @@ interface BoardProps {
     ex: boolean;
   };
   player: any;
+  setStartable: Function;
 }
 
 interface Square {
@@ -67,6 +68,7 @@ const Board = (props: BoardProps) => {
     props.socket?.on(SERVER_GAME_START, (boardGame: Square[]) => {
       setBoard(boardGame);
       setPlayable(true);
+      props.setStartable(false);
     });
 
     props.socket?.on(GAME_OVER, (winningCondition: {circle: boolean; ex: boolean; drawingLine: string[], direction: string}) => {
@@ -83,6 +85,7 @@ const Board = (props: BoardProps) => {
           return prevState;
         });
       }
+      props.setStartable(true);
       setPlayable(false);
       setMyTurn(false);
     });
