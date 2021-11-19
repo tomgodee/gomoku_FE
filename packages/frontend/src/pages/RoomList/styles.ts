@@ -25,7 +25,6 @@ export const RoomContainer = styled(Card)`
   }
 
   .MuiCardMedia-media {
-    width: unset;
   }
 
   .MuiCardContent-root {

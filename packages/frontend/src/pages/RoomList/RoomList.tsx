@@ -14,6 +14,7 @@ import {
 import { useAppSelector } from '../../store/hooks';
 import { selectUserState } from '../../reducers/user';
 import { ROOM_PATH } from '../../config/paths';
+import { roomBackground } from '../../assets';
 
 const RoomList = () => {
   const history = useHistory();
@@ -44,18 +45,20 @@ const RoomList = () => {
                 <CardActionArea>
                   <CardMedia
                     component="img"
-                    height={170}
+                    height={180}
+                    width="100%"
+                    src={roomBackground}
                   />
-                  <CardContent>
+                  <CardContent style={{ height: '100%' }}>
                     <Typography component="p">
                       Room no.
                       {room}
                     </Typography>
-                    <Typography component="p">
+                    {/* <Typography component="p">
                       0/2
                       {' '}
                       players
-                    </Typography>
+                    </Typography> */}
                   </CardContent>
                 </CardActionArea>
               </RoomContainer>
