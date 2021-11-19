@@ -77,7 +77,7 @@ const Board = (props: BoardProps) => {
         setBoard((prevState) => {
           for (let i = 0; i < winningCondition.drawingLine.length; i += 1) {
             const [y, x] = winningCondition.drawingLine[i].split('-');
-            const index = Number(`${x}${y}`);
+            const index = Number(`${y}${x}`);
             prevState[index].drawing = true;
           }
           return prevState;
@@ -115,13 +115,54 @@ const Board = (props: BoardProps) => {
     }
   };
 
-  const lineWidth = useMemo(() => {
-    return Math.sqrt((squareRef.current?.clientWidth + 2) ** 2 + (squareRef.current?.clientHeight + 2) ** 2);
-  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight]);
+  const lineWidth = useMemo((): number => {
+    if (direction === 'ltr' || direction === 'rtl') {
+      return Math.sqrt((squareRef.current?.clientWidth + 2) ** 2 + (squareRef.current?.clientHeight + 2) ** 2);
+    }
+    if (direction === 'vertical') {
+      return squareRef.current?.clientHeight + 2;
+    }
+    return squareRef.current?.clientWidth + 2;
+  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight, direction]);
 
   const rotate = useMemo(() => {
-    return Math.atan((squareRef.current?.clientWidth + 2) / (squareRef.current?.clientHeight + 2)) * 180 / Math.PI;
-  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight]);
+    if (direction === 'ltr') {
+      return -Math.atan((squareRef.current?.clientWidth + 2) / (squareRef.current?.clientHeight + 2)) * 180 / Math.PI;
+    }
+    if (direction === 'rtl') {
+      return Math.atan((squareRef.current?.clientWidth + 2) / (squareRef.current?.clientHeight + 2)) * 180 / Math.PI;
+    }
+    if (direction === 'vertical') {
+      return 0;
+    }
+    return 90;
+  }, [squareRef.current?.clientWidth, squareRef.current?.clientHeight, direction]);
+
+  const top = useMemo(() => {
+    if (direction === 'ltr') {
+      return -112;
+    }
+    if (direction === 'rtl') {
+      return 31;
+    }
+    if (direction === 'vertical') {
+      return 0;
+    }
+    return 50;
+  }, [direction]);
+
+  const left = useMemo(() => {
+    if (direction === 'ltr') {
+      return 24;
+    }
+    if (direction === 'rtl') {
+      return 23;
+    }
+    if (direction === 'vertical') {
+      return 48;
+    }
+    return 0;
+  }, [direction]);
 
   return (
     <BoardContainer>
@@ -136,7 +177,7 @@ const Board = (props: BoardProps) => {
               {square.circle && 'O'}
               {square.ex && 'X'}
             </Typography>
-            {square.drawing && <Line $width={lineWidth} $rotate={rotate} />}
+            {square.drawing && <Line $width={lineWidth} $rotate={rotate} $top={top} $left={left} />}
           </BoardSquare>
         );
       })}

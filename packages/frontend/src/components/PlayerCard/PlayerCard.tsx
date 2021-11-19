@@ -60,7 +60,7 @@ const PlayerCard = (props: PlayerCardProps) => {
   return (
     <PlayerCardContainer>
       <Grid container>
-        <Grid item xs={8} style={{ borderRight: `4px solid ${borderChatContainer}` }}>
+        <Grid item xs={7} style={{ borderRight: `4px solid ${borderChatContainer}` }}>
           <Box display="flex" flexDirection="column" justifyContent="space-evenly" alignItems="center" height="100%">
             <Avatar src={goStone} alt="Avatar" />
             <NameTag>
@@ -81,7 +81,7 @@ const PlayerCard = (props: PlayerCardProps) => {
           </Box>
         </Grid>
 
-        <Grid item xs={4}>
+        <Grid item xs={5}>
           <Box display="flex" justifyContent="center" alignItems="center" height="100%">
             <Score>
               {player?.score}

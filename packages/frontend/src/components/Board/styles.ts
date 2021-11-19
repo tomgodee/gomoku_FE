@@ -23,6 +23,8 @@ export const BoardSquare = styled.div`
 interface LineProps {
   $width: number;
   $rotate: number;
+  $top: number;
+  $left: number;
 }
 
 const Fadein = keyframes`
@@ -37,8 +39,8 @@ const Fadein = keyframes`
 
 export const Line = styled.div<LineProps>`
   position: absolute;
-  top: 31%;
-  left: 25%;
+  top: ${(props) => (`${props.$top}%`)};
+  left: ${(props) => (`${props.$left}%`)};
   width: ${(props) => (`${props.$width}px`)};
   height: ${(props) => (`${props.$width}px`)};
   border-left: 3px solid ${salmon};
